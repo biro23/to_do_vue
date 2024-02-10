@@ -1,10 +1,13 @@
 <script setup>
 import { reactive } from "vue";
+import Cabecalho from "./components/Cabecalho.vue";
+import Formulario from "./components/Formulario.vue"; // Corrigido o import do componente Formulario
+import ListaDeTarefas from "./components/ListaDeTarefas.vue"
 
 // criando um estado para as tarefas, tarefaTemp: '', vai começar com uma string vazia
 const estado = reactive({
   filtro: "todas",
-  tarefaTemp: " ",
+  tarefaTemp: "",
   tarefas: [
     { titulo: "Estudar ES6", finalizada: false },
     {
@@ -45,69 +48,20 @@ const cadastraTarefa = () => {
     finalizada: false,
   };
   estado.tarefas.push(tarefaNova);
-  estado.tarefaTemp = '';
+  estado.tarefaTemp = "";
 };
 </script>
 
 <template>
   <!-- aqui vamos ter um container, mais um cabecalho, aplicar o boostrap nesta parte -->
   <div class="container">
-    <header class="p-5 mb-4 mt-4 bg-light rounded-3">
-      <h1>Minhas tarefas</h1>
-      <p>Você possui {{ getTarefasPendentes().length }} tarefas pendentes</p>
-    </header>
-    <!-- aqui teremos um formulario, uma linha, com o required, o navegador da a mensagem de enviar cadastro -->
-    <form @submit.prevent="cadastraTarefa">
-      <div class="row">
-        <div class="col">
-          <input
-            :value="estado.tarefaTemp"
-            @change="(evento) => (estado.tarefaTemp = evento.target.value)"
-            required
-            type="text"
-            placeholder="Digite aqui a descrição da tarefa"
-            class="form-control"
-          />
-        </div>
-        <div class="col-md-2">
-          <button type="submit" class="btn btn-primary">Cadastrar</button>
-        </div>
-
-        <!-- aqui vai outra coluna -->
-        <div class="col-md-2">
-          <select
-            @change="(evento) => (estado.filtro = evento.target.value)"
-            class="form-control"
-          >
-            <option value="todas">Todas tarefas</option>
-            <option value="Finalizadas">Finalizadas</option>
-            <option value="Pendentes">Pendentes</option>
-          </select>
-        </div>
-      </div>
-    </form>
-    <!-- lista nao ordenada  -->
-    <ul class="list-group mt-4">
-      <li
-        class="list-group-item"
-        v-for="tarefa in getTarefasFiltradas()"
-        :key="tarefa.titulo"
-      >
-        <input
-          @change="(evento) => (tarefa.finalizada = evento.target.checked)"
-          :checked="tarefa.finalizada"
-          :id="tarefa.titulo"
-          type="checkbox"
-        />
-        <label
-          :class="{ done: tarefa.finalizada }"
-          class="ms-3"
-          :for="tarefa.titulo"
-        >
-          {{ tarefa.titulo }}
-        </label>
-      </li>
-    </ul>
+    <Cabecalho :tarefasPendentes="getTarefasPendentes.length"/> <!-- Corrigido a propriedade length -->
+    <Formulario 
+      v-bind:tarefaTemp="tarefaTemp" <!-- Corrigido aqui -->
+      @input="(evento) => estado.tarefaTemp = evento.target.value"
+      @submit="cadastraTarefa"
+    />
+    <ListaDeTarefas :tarefas="getTarefasFiltradas()" />
   </div>
 </template>
 
